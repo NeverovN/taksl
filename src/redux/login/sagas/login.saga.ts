@@ -14,7 +14,9 @@ export function* loginSaga({ payload }: ReturnType<typeof LOGIN.TRIGGER>) {
   >;
 
   if (response.error) {
-    yield put(LOGIN.FAIL({ error: response.error }));
+    yield put(LOGIN.COMPLETE({ token: '' }));
+
+    // yield put(LOGIN.FAIL({ error: response.error }));
     return;
   }
 
