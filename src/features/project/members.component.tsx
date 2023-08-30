@@ -27,7 +27,7 @@ export interface MembersProps {
   onAddPress: () => void;
 }
 
-export type ProjectMember = { name: string; initials: string; id: string };
+export type ProjectMember = { username: string; initials: string; id: string };
 
 export const Members: React.FC<MembersProps> = ({
   members,
@@ -39,7 +39,7 @@ export const Members: React.FC<MembersProps> = ({
   const renderItem: ListRenderItem<ProjectMember> = ({ item }) => {
     return (
       <PressableOpacity onPress={() => onMemberPress(item.id)} key={item.id}>
-        <Member name={item.name} initials={item.initials} />
+        <Member name={item.username} initials={item.initials} />
       </PressableOpacity>
     );
   };
@@ -58,13 +58,16 @@ export const Members: React.FC<MembersProps> = ({
         <CircledLayout style={styles.membersWrapper}>
           <FlatList
             horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.list}
             data={members}
             renderItem={renderItem}
             ListHeaderComponent={() => <AddButton onPress={onAddPress} />}
             ListFooterComponent={() => <View style={styles.spacer} />}
           />
         </CircledLayout>
-        <View style={styles.membersBalancer} />
+        <View style={styles.listCompensator} />
+        {/* <View style={styles.membersBalancer} /> */}
       </View>
     </View>
   );
@@ -94,5 +97,15 @@ export const styles = StyleSheet.create({
   },
   spacer: {
     width: 20,
+  },
+  list: {
+    borderTopRightRadius: Number.MAX_SAFE_INTEGER,
+    borderBottomRightRadius: Number.MAX_SAFE_INTEGER,
+
+    borderColor: COLORS.backgroundSecondary,
+  },
+  listCompensator: {
+    flex: 1,
+    minWidth: 32,
   },
 });

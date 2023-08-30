@@ -30,6 +30,7 @@ export const TextInput = React.forwardRef<RNTextInput, TextInputProps>(
     return (
       <RNTextInput
         ref={ref}
+        autoCapitalize="none"
         placeholderTextColor={COLORS[placeholderTextColor]}
         style={[
           // eslint-disable-next-line react-native/no-inline-styles

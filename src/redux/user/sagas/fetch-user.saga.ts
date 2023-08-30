@@ -1,26 +1,24 @@
 import { call, put, takeLatest } from '@redux-saga/core/effects';
-import { FETCH_USER, FETCH_USER_PROJECTS } from '../user.actions';
+import {
+  FETCH_USER,
+  FETCH_USER_NOTES,
+  FETCH_USER_PROJECTS,
+} from '../user.actions';
 import { userApi } from 'src/api/user/user.api';
 import { Response } from 'src/common/types/api.types';
 import { UserData } from '../user.types';
 import { projectsApi } from 'src/api/projects/projects.api';
-import { ProjectResponse } from 'src/api/projects/projects.types';
+import { UserProject } from 'src/api/projects/projects.types';
 
-export function* fetchUserSaga({
-  payload,
-}: ReturnType<typeof FETCH_USER.TRIGGER>) {
+export function* fetchUserSaga() {
   yield put(FETCH_USER.START());
   yield put(FETCH_USER_PROJECTS.START());
+  yield put(FETCH_USER_NOTES.TRIGGER());
 
-  const user = (yield call(userApi.getUserById, payload.id)) as Response<
+  const user = (yield call(userApi.getCurrentUser)) as Response<
     UserData,
     Error
   >;
-
-  const projects = (yield call(
-    projectsApi.getProjectsByUserId,
-    payload.id,
-  )) as Response<ProjectResponse[], Error>;
 
   if (user.error) {
     yield put(FETCH_USER.FAIL({ error: user.error }));
@@ -28,6 +26,11 @@ export function* fetchUserSaga({
   }
 
   yield put(FETCH_USER.COMPLETE(user.data));
+
+  const projects = (yield call(projectsApi.getProjectsForUser)) as Response<
+    UserProject[],
+    Error
+  >;
 
   if (projects.error) {
     yield put(FETCH_USER_PROJECTS.FAIL({ error: projects.error }));

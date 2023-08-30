@@ -21,9 +21,9 @@ export const SettingsScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<RootNavigationProp>();
 
-  const [name, setName] = useState<string>(data.username);
+  const [username, setUsername] = useState<string>(data.username);
   const [role, setRole] = useState<string>(data.role);
-  const [phone, setPhone] = useState<string>(data.phone);
+  const [phoneNumber, setPhoneNumber] = useState<string>(data.phoneNumber);
   const [email, setMail] = useState<string>(data.email);
   const [telegram, setTelegram] = useState<string>(data.telegram);
 
@@ -33,7 +33,10 @@ export const SettingsScreen: React.FC = () => {
 
   const backNavigationHandler = () => {
     dispatch(
-      UPDATE_USER.TRIGGER({ body: { phone, email, telegram }, id: data.id }),
+      UPDATE_USER.TRIGGER({
+        body: { phoneNumber, email, telegram, username, role },
+        id: data.id,
+      }),
     );
     if (navigation.canGoBack()) {
       navigation.goBack();
@@ -55,17 +58,17 @@ export const SettingsScreen: React.FC = () => {
             onBackPress={backNavigationHandler}
           />
           <Header
-            name={name}
+            username={username}
             role={role}
             style={styles.header}
-            setName={setName}
+            setUsername={setUsername}
             setRole={setRole}
           />
           <View style={styles.contactPreferencesSection}>
             <ContactItem
               iconName={ICON_NAMES.phone}
-              value={phone}
-              onChangeText={setPhone}
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
               placeholder={STRINGS.phone}
               style={styles.contactItem}
             />

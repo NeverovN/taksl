@@ -8,9 +8,10 @@ export type RootStackParamList = {
   [screenNames.register]: undefined;
   [screenNames.login]: undefined;
   [screenNames.project]: { projectId: string };
-  [screenNames.task]: { taskId: string };
-  [screenNames.projectMembers]: { projectId: string };
+  [screenNames.task]: { taskId: string; projectId: string };
+  [screenNames.projectMembers]: { projectId: string; taskId?: string };
   [screenNames.projectMember]: { userId: string };
+  [screenNames.addMember]: { projectId: string };
 };
 
 export type RootNavigationProp = NativeStackNavigationProp<
@@ -24,3 +25,5 @@ export type MembersRoute = RouteProp<
   RootStackParamList,
   'ProjectMembersScreen'
 >;
+export type MemberRoute = RouteProp<RootStackParamList, 'ProjectMemberScreen'>;
+export type AddMemberRoute = RouteProp<RootStackParamList, 'AddMemberScreen'>;

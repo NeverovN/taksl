@@ -1,13 +1,24 @@
 import { createAction } from '@reduxjs/toolkit';
 import { UpdateUser, UserData } from './user.types';
-import { FetchUserRequestParams } from 'src/api/user/user.types';
-import { ProjectResponse } from 'src/api/projects/projects.types';
+import { FetchUserRequestParams, UserNote } from 'src/api/user/user.types';
+import { UserProject } from 'src/api/projects/projects.types';
 
 export const FETCH_USER = {
-  TRIGGER: createAction<FetchUserRequestParams>('[Fetch User] Triggered'),
+  TRIGGER: createAction('[Fetch User] Triggered'),
   START: createAction('[Fetch User] Started'),
   COMPLETE: createAction<UserData>('[Fetch User] Complete'),
   FAIL: createAction<{ error: Error }>('[Fetch User] Failed'),
+};
+
+export const FETCH_USER_NOTES = {
+  TRIGGER: createAction('[Fetch User Notes] Triggered'),
+  START: createAction('[Fetch User Notes] Started'),
+  COMPLETE: createAction<UserNote[]>('[Fetch User Notes] Complete'),
+  FAIL: createAction<{ error: Error }>('[Fetch User Notes] Failed'),
+};
+
+export const ADD_NOTE = {
+  TRIGGER: createAction<{ text: string }>('[Add Note] Triggered'),
 };
 
 export const FETCH_USER_PROJECTS = {
@@ -15,7 +26,7 @@ export const FETCH_USER_PROJECTS = {
     '[Fetch User Projects] Triggered',
   ),
   START: createAction('[Fetch User Projects] Started'),
-  COMPLETE: createAction<ProjectResponse[]>('[Fetch User Projects] Complete'),
+  COMPLETE: createAction<UserProject[]>('[Fetch User Projects] Complete'),
   FAIL: createAction<{ error: Error }>('[Fetch User Projects] Failed'),
 };
 

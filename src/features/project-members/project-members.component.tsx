@@ -1,26 +1,35 @@
 import React from 'react';
-import { FlatList, ListRenderItem, StyleSheet, View } from 'react-native';
-import { Member, ProjectMember } from 'src/common/components/member.component';
+import {
+  FlatList,
+  FlatListProps,
+  ListRenderItem,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { UserShortened } from 'src/api/projects/projects.types';
+import { Member } from 'src/common/components/member.component';
+import { OptionalPick } from 'src/common/types/optional.type';
 
-export interface ProjectMembersListProps {
-  members: ProjectMember[];
+export interface ProjectMembersListProps
+  extends Omit<FlatListProps<any>, 'data' | 'renderItem'> {
+  members: OptionalPick<UserShortened, 'storyPointsPerWeek' | 'role'>[];
   onPress: (id: string) => void;
 }
 
 export const ProjectMembersList: React.FC<ProjectMembersListProps> = ({
   members,
   onPress,
+  ...rest
 }) => {
-  const renderItem: ListRenderItem<ProjectMember> = ({ item }) => {
+  const renderItem: ListRenderItem<
+    OptionalPick<UserShortened, 'storyPointsPerWeek' | 'role'>
+  > = ({ item }) => {
     return (
       <Member
         key={item.id}
-        id={item.id}
-        initials={item.initials}
-        name={item.name}
-        role={item.role}
-        capacity={item.capacity}
         onPress={() => onPress(item.id)}
+        {...item}
+        storyPointsPerWeek={item.storyPointsPerWeek?.toFixed(1)}
       />
     );
   };
@@ -31,6 +40,7 @@ export const ProjectMembersList: React.FC<ProjectMembersListProps> = ({
       contentContainerStyle={styles.listStyle}
       renderItem={renderItem}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
+      {...rest}
     />
   );
 };

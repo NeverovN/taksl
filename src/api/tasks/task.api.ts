@@ -1,31 +1,27 @@
 import { baseApi } from '../base.api';
 import { PromiseResponse } from 'src/common/types/api.types';
 
-import { Task, TaskType } from 'src/common/types/task.types';
+import { Task, TaskUpdateBody } from 'src/common/types/task.types';
+import { NoteBody, TaskNotesResponse } from './tasks.types';
 
 export class TaskAPI {
-  getTaskById = async (id: string): PromiseResponse<Task, Error> => {
-    // baseApi.post('/auth', body);
-    return {
-      status: 200,
-      ok: true,
-      data: {
-        id: '0',
-        name: 'Task Name',
-        description: 'Task Description',
-        assigneeUser: {
-          id: '0',
-          username: 'Nastya Soldatenko',
-          initials: 'NS',
-          role: 'UX/UI designer',
-          storyPointsPerWeek: 15,
-        },
-        storyPoints: 1,
-        status: TaskType.archived,
-        daysLeft: 14,
-      },
-    };
-  };
+  getTaskById = async (
+    projectId: string,
+    taskId: string,
+  ): PromiseResponse<Task, Error> =>
+    baseApi.get(`/project/${projectId}/task/${taskId}`);
+
+  getNotesForTask = (
+    projectId: string,
+    taskId: string,
+  ): PromiseResponse<TaskNotesResponse, Error> =>
+    baseApi.get(`/project/${projectId}/task/${taskId}/comment`);
+
+  addComment = (projectId: string, taskId: string, body: NoteBody) =>
+    baseApi.post(`/project/${projectId}/task/${taskId}/comment`, body);
+
+  updateTask = (projectId: string, taskId: string, body: TaskUpdateBody) =>
+    baseApi.put(`/project/${projectId}/task/${taskId}`, body);
 }
 
 export const taskApi = new TaskAPI();

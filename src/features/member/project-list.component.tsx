@@ -1,28 +1,35 @@
 import React from 'react';
-import { Project, ProjectProps } from './project.component';
+import { Project } from './project.component';
 import {
   FlatList,
+  FlatListProps,
   ListRenderItem,
   StyleProp,
   StyleSheet,
   View,
   ViewStyle,
 } from 'react-native';
+import { ProjectShort } from 'src/api/projects/projects.types';
 
-export interface ProjectListProps {
-  projects: Omit<ProjectProps, 'onPress'>[];
+export interface ProjectListProps
+  extends Omit<FlatListProps<ProjectShort>, 'data' | 'renderItem'> {
+  projects: ProjectShort[];
   onPress: (id: string) => void;
   style?: StyleProp<ViewStyle>;
+  ListHeaderComponent?:
+    | React.ComponentType<any>
+    | React.ReactElement<unknown, string | React.JSXElementConstructor<any>>
+    | null
+    | undefined;
 }
 
 export const ProjectList: React.FC<ProjectListProps> = ({
   projects,
   onPress,
   style,
+  ...rest
 }) => {
-  const renderItem: ListRenderItem<Omit<ProjectProps, 'onPress'>> = ({
-    item,
-  }) => {
+  const renderItem: ListRenderItem<ProjectShort> = ({ item }) => {
     return <Project {...item} onPress={() => onPress(item.id)} />;
   };
   return (
@@ -31,6 +38,7 @@ export const ProjectList: React.FC<ProjectListProps> = ({
       data={projects}
       renderItem={renderItem}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
+      {...rest}
     />
   );
 };

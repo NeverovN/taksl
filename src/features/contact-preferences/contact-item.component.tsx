@@ -6,8 +6,8 @@ import { IconName } from 'src/common/types/icon-name.types';
 
 export interface ContactItemProps {
   iconName: IconName;
-  value: string;
-  onChangeText: (newValue: string) => void;
+  value?: string;
+  onChangeText?: (newValue: string) => void;
   placeholder: string;
   style?: StyleProp<ViewStyle>;
   editable?: boolean;
@@ -21,7 +21,7 @@ export const ContactItem: React.FC<ContactItemProps> = ({
   style,
   editable = true,
 }) => {
-  return (
+  return value || editable ? (
     <View style={[styles.wrapper, style]}>
       <Icon name={iconName} size={24} color={'title'} style={styles.icon} />
       <TextInput
@@ -33,7 +33,7 @@ export const ContactItem: React.FC<ContactItemProps> = ({
         editable={editable}
       />
     </View>
-  );
+  ) : null;
 };
 
 export const styles = StyleSheet.create({

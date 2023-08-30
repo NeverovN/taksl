@@ -1,8 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Keyboard, RefreshControl, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useDispatch, useSelector } from 'react-redux';
+import { userApi } from 'src/api/user/user.api';
+import { Member } from 'src/api/user/user.types';
 import { Pressable } from 'src/common/components/button.component';
 import { HeaderWithButtons } from 'src/common/components/header-with-buttons.component';
 import { Text18 } from 'src/common/components/text.component';
@@ -13,79 +14,88 @@ import { STRINGS } from 'src/common/constants/strings.consts';
 import { ContactItem } from 'src/features/contact-preferences/contact-item.component';
 import { ProjectList } from 'src/features/member/project-list.component';
 import { Header } from 'src/features/settings/header.component';
-import { UPDATE_USER } from 'src/redux/user/user.actions';
-import { rootUserSelector } from 'src/redux/user/user.selectors';
-import { RootNavigationProp } from 'src/routes/root/root.types';
+import { MemberRoute, RootNavigationProp } from 'src/routes/root/root.types';
 
 export const MemberScreen: React.FC = () => {
-  const { loading, data } = useSelector(rootUserSelector);
-  const dispatch = useDispatch();
   const navigation = useNavigation<RootNavigationProp>();
+  const {
+    params: { userId },
+  } = useRoute<MemberRoute>();
 
-  const [name, setName] = useState<string>(data.username);
-  const [role, setRole] = useState<string>(data.role);
-  const [phone, setPhone] = useState<string>(data.phone);
-  const [email, setEmail] = useState<string>(data.email);
-  const [telegram, setTelegram] = useState<string>(data.telegram);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [, setError] = useState<Error | null>(null);
+  const [user, setUser] = useState<Member>();
 
   const projectPressHandler = (projectId: string) => {
     navigation.push(structuredScreens.project, { projectId });
   };
 
+  useEffect(() => {
+    loadUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const refreshHandler = () => {
+    setRefreshing(true);
+    loadUser().finally(() => setRefreshing(false));
+  };
+
+  const loadUser = async () => {
+    setLoading(true);
+    fetchMember().finally(() => setLoading(false));
+  };
+
+  const fetchMember = async () => {
+    const response = await userApi.getUserById(userId);
+
+    if (response.error) {
+      setError(response.error);
+      return;
+    }
+
+    setUser(response.data);
+  };
+
   const backNavigationHandler = () => {
-    dispatch(
-      UPDATE_USER.TRIGGER({ body: { phone, email, telegram }, id: data.id }),
-    );
     if (navigation.canGoBack()) {
       navigation.goBack();
     }
   };
 
-  if (loading) {
-    return null;
-  }
-
-  return (
-    <Pressable onPress={Keyboard.dismiss} style={styles.keyboardAvoiding}>
-      <SafeAreaView edges={['top']} style={styles.wrapper}>
+  const getContent = () => {
+    return (
+      <View style={styles.wrapper}>
         <HeaderWithButtons
           title={STRINGS.member}
           editable={false}
           style={styles.navBar}
           onBackPress={backNavigationHandler}
-          icons={[
-            { icon: ICON_NAMES.filter, onPress: () => {} },
-            { icon: ICON_NAMES.search, onPress: () => {} },
-          ]}
         />
         <Header
-          name={name}
-          role={role}
+          username={user?.username}
+          role={user?.role}
           style={styles.header}
-          setName={setName}
-          setRole={setRole}
+          editable={false}
         />
         <View style={styles.contactPreferencesSection}>
           <ContactItem
             iconName={ICON_NAMES.phone}
-            value={phone}
-            onChangeText={setPhone}
+            value={user?.phoneNumber}
             placeholder={STRINGS.phone}
             style={styles.contactItem}
             editable={false}
           />
           <ContactItem
             iconName={ICON_NAMES.mail}
-            value={email}
-            onChangeText={setEmail}
+            value={user?.email}
             placeholder={STRINGS.mail}
             style={styles.contactItem}
             editable={false}
           />
           <ContactItem
             iconName={ICON_NAMES.telegram}
-            value={telegram}
-            onChangeText={setTelegram}
+            value={user?.telegram}
             placeholder={STRINGS.telegram}
             editable={false}
           />
@@ -93,39 +103,29 @@ export const MemberScreen: React.FC = () => {
         <Text18 style={styles.projectsHeader} color="black">
           {STRINGS.projects}
         </Text18>
+      </View>
+    );
+  };
+
+  if (loading && !refreshing) {
+    return null;
+  }
+
+  return (
+    <Pressable onPress={Keyboard.dismiss} style={styles.keyboardAvoiding}>
+      <SafeAreaView edges={['top', 'bottom']} style={styles.wrapper}>
         <ProjectList
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={getContent()}
           style={styles.listCompensation}
-          projects={[
-            {
-              id: '0',
-              name: 'Project 1',
-              description: 'Description',
-              progress: 20,
-              numberOfTasks: 6,
-            },
-            {
-              id: '1',
-              name: 'Project 1',
-              description: 'Description',
-              progress: 20,
-              numberOfTasks: 6,
-            },
-            {
-              id: '3',
-              name: 'Project 1',
-              description: 'Description',
-              progress: 20,
-              numberOfTasks: 6,
-            },
-            {
-              id: '4',
-              name: 'Project 1',
-              description: 'Description',
-              progress: 20,
-              numberOfTasks: 6,
-            },
-          ]}
+          projects={user?.mutualProjects || []}
           onPress={projectPressHandler}
+          refreshControl={
+            <RefreshControl
+              onRefresh={refreshHandler}
+              refreshing={refreshing}
+            />
+          }
         />
       </SafeAreaView>
     </Pressable>

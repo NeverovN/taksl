@@ -23,7 +23,12 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <View style={[styles.wrapper, style]}>
       <Avatar source={source} style={styles.avatar} />
-      <UserInfo name={name} role={role} style={styles.userInfo} />
+      <UserInfo
+        username={name}
+        role={role}
+        style={styles.userInfo}
+        editable={false}
+      />
       <IconButton
         name="settings"
         size={32}

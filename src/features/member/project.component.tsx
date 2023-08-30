@@ -9,8 +9,8 @@ export interface ProjectProps {
   id: string;
   name: string;
   description: string;
-  numberOfTasks: number;
-  progress: number;
+  numberOfTasks?: number;
+  progress?: number;
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
 }
@@ -35,16 +35,20 @@ export const Project: React.FC<ProjectProps> = ({
           </View>
         </View>
         <View style={styles.infoBlock}>
-          <View style={styles.infoItem}>
-            <Text12 color="subtext">
-              {STRINGS.tasks}/{STRINGS.h}
-            </Text12>
-            <Text16 color="text">{numberOfTasks}</Text16>
-          </View>
-          <View style={styles.infoItem}>
-            <Text12 color="subtext">{STRINGS.tasks}</Text12>
-            <Text16 color="text">{progress}%</Text16>
-          </View>
+          {numberOfTasks && (
+            <View style={styles.infoItem}>
+              <Text12 color="subtext">
+                {STRINGS.tasks}/{STRINGS.h}
+              </Text12>
+              <Text16 color="text">{numberOfTasks}</Text16>
+            </View>
+          )}
+          {progress && (
+            <View style={styles.infoItem}>
+              <Text12 color="subtext">{STRINGS.tasks}</Text12>
+              <Text16 color="text">{progress}%</Text16>
+            </View>
+          )}
         </View>
       </CircledLayout>
       <View style={styles.membersBalancer} />

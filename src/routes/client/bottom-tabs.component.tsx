@@ -2,19 +2,28 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
 import { IconButton, Pressable } from 'src/common/components/button.component';
 
 import { COLORS } from 'src/common/constants/colors.consts';
 import { ICON_NAMES } from 'src/common/constants/icon-names.consts';
 import { structuredScreens } from 'src/common/constants/screens.consts';
+import { CREATE_PROJECT } from 'src/redux/project/project.actions';
 
 export const BottomTabs: React.FC<BottomTabBarProps> = ({
   state,
   descriptors,
   navigation,
 }) => {
+  const dispatch = useDispatch();
+
   const newProjectHandler = () => {
-    navigation.navigate(structuredScreens.project, { projectId: '0' });
+    dispatch(
+      CREATE_PROJECT.TRIGGER({
+        callback: id =>
+          navigation.navigate(structuredScreens.project, { projectId: id }),
+      }),
+    );
   };
 
   return (

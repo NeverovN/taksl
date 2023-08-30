@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   ListRenderItem,
+  RefreshControl,
   StyleSheet,
   TextInput,
   View,
@@ -16,13 +17,18 @@ import { Members } from 'src/features/project/members.component';
 import { SortItems } from 'src/features/project/sort-items.component';
 import { Task } from 'src/features/project/task.component';
 import { PressableOpacity } from 'src/common/components/button.component';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { ProjectRoute, RootNavigationProp } from 'src/routes/root/root.types';
 import { structuredScreens } from 'src/common/constants/screens.consts';
 import { TaskType } from 'src/common/types/task.types';
 import { ProjectData } from 'src/features/project/types/project.type';
 import { projectsApi } from 'src/api/projects/projects.api';
 import { TaskResponse } from 'src/api/tasks/tasks.types';
+import { Error } from 'src/common/components/error.component';
 
 export interface ProjectProps {}
 
@@ -33,8 +39,9 @@ export const ProjectScreen: React.FC<ProjectProps> = () => {
   } = useRoute<ProjectRoute>();
 
   const [project, setProject] = useState<ProjectData>();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const ref = useRef<TextInput>(null);
   const [focused, setFocused] = useState<boolean>(false);
@@ -48,30 +55,34 @@ export const ProjectScreen: React.FC<ProjectProps> = () => {
 
   const fetchTasks = async () => {
     const response = await projectsApi.getTasksByProjectId(projectId);
+
     if (response.error) {
       setError(response.error);
       return;
     }
+
     setProject(prev => ({ ...(prev as ProjectData), tasks: response.data }));
   };
 
   const fetchProject = async () => {
-    fetchTasks();
     const response = await projectsApi.getProjectById(projectId);
     if (response.error) {
       setError(response.error);
       return;
     }
+
     setProject(prev => ({ ...(prev as ProjectData), ...response.data }));
   };
 
-  useEffect(() => {
-    setLoading(true);
-    fetchProject().then(() => {
-      setLoading(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      Promise.all([fetchTasks(), fetchProject()]).finally(() => {
+        setLoading(false);
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
 
   useEffect(() => {
     setName(project?.name ?? '');
@@ -93,7 +104,11 @@ export const ProjectScreen: React.FC<ProjectProps> = () => {
   const seeAllPressHandler = () => {
     navigation.navigate(structuredScreens.projectMembers, { projectId });
   };
-  const addMemberPressHandler = () => {};
+  const addMemberPressHandler = () => {
+    navigation.navigate(structuredScreens.addMember, {
+      projectId,
+    });
+  };
 
   const selectFilterHandler = (filterType: TaskType) => {
     setSelectedFilter(prevType => {
@@ -147,7 +162,19 @@ export const ProjectScreen: React.FC<ProjectProps> = () => {
   };
 
   const taskPressHandler = (taskId: string) => {
-    navigation.navigate(structuredScreens.task, { taskId });
+    navigation.navigate(structuredScreens.task, { taskId, projectId });
+  };
+
+  const addTaskHandler = () => {
+    projectsApi.createTaskInProject(projectId, {}).then(resp => {
+      if (resp.error) {
+        return;
+      }
+      navigation.navigate(structuredScreens.task, {
+        taskId: resp.data.id,
+        projectId,
+      });
+    });
   };
 
   const getTypeCount = (status: TaskType) => {
@@ -164,6 +191,21 @@ export const ProjectScreen: React.FC<ProjectProps> = () => {
     );
   };
 
+  const backPressHandler = () => {
+    projectsApi.updateProject(projectId, { name, description }).finally(() => {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      }
+    });
+  };
+
+  const refreshHandler = () => {
+    setRefreshing(true);
+    Promise.all([fetchTasks(), fetchProject()]).finally(() => {
+      setRefreshing(false);
+    });
+  };
+
   const getHeader = () => {
     return (
       <>
@@ -175,15 +217,12 @@ export const ProjectScreen: React.FC<ProjectProps> = () => {
           icons={[
             {
               icon: 'plus',
-              onPress: () => {},
-            },
-            {
-              icon: 'search',
-              onPress: () => ref.current?.focus(),
+              onPress: addTaskHandler,
             },
           ]}
           onChangeText={setName}
           style={styles.header}
+          onBackPress={backPressHandler}
         />
         <Description
           text={description}
@@ -191,7 +230,7 @@ export const ProjectScreen: React.FC<ProjectProps> = () => {
           style={[styles.description, styles.padding]}
         />
         <Members
-          members={[{ id: '0', name: 'Настя Солдатенко', initials: 'НС' }]}
+          members={project?.memberUsers || []}
           onMemberPress={memberPressHandler}
           onSeeAllPress={seeAllPressHandler}
           onAddPress={addMemberPressHandler}
@@ -217,9 +256,15 @@ export const ProjectScreen: React.FC<ProjectProps> = () => {
     );
   };
 
-  return loading ? (
-    <Loading withBack />
-  ) : (
+  if (loading) {
+    return <Loading withBack />;
+  }
+
+  if (error) {
+    return <Error error={error} />;
+  }
+
+  return (
     <SafeAreaView edges={['top']}>
       <FlatList
         contentContainerStyle={styles.tasks}
@@ -232,6 +277,9 @@ export const ProjectScreen: React.FC<ProjectProps> = () => {
         onTouchStart={touchHandler}
         style={styles.scrollWrapper}
         scrollEventThrottle={100}
+        refreshControl={
+          <RefreshControl onRefresh={refreshHandler} refreshing={refreshing} />
+        }
       />
     </SafeAreaView>
   );

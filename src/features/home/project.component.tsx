@@ -8,27 +8,27 @@ export interface ProjectProps {
   id: string;
   name: string;
   description?: string;
-  progress?: number;
+  donePercent?: number;
   style?: StyleProp<ViewStyle>;
 }
 
 export const Project: React.FC<ProjectProps> = ({
-  name: title,
+  name,
   description,
-  progress,
+  donePercent,
   style,
 }) => {
   return (
     <CircledLayout style={[styles.rowWrapper, style]}>
       <View style={styles.textWrapper}>
         <Text22 style={styles.title} numberOfLines={1}>
-          {title}
+          {name}
         </Text22>
         {description && <Text14 numberOfLines={1}>{description}</Text14>}
       </View>
-      {progress && (
+      {!!donePercent && (
         <View style={styles.progress}>
-          <Text14>{progress}%</Text14>
+          <Text14>{donePercent}%</Text14>
         </View>
       )}
     </CircledLayout>

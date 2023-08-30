@@ -1,10 +1,10 @@
-import { UserProject } from 'src/api/projects/projects.types';
-import { UpdateUserBody, UserNote } from 'src/api/user/user.types';
+import { ProjectResponse } from 'src/api/projects/projects.types';
+import { UpdateUserBody } from 'src/api/user/user.types';
 
 export type UserState = {
   loading: boolean;
   error: Error | null;
-  data: UserData & UserProjects & UserNotes;
+  data: UserData & UserProjects;
 };
 
 export type UserData = {
@@ -13,17 +13,13 @@ export type UserData = {
   initials: string;
   email: string;
   role: string;
-  phoneNumber: string;
+  phone: string;
   telegram: string;
   storyPointsPerWeek: number;
 };
 
 export type UserProjects = {
-  projects: UserProject[];
-};
-
-export type UserNotes = {
-  notes: UserNote[];
+  projects: ProjectResponse[];
 };
 
 export type ProjectShortened = {

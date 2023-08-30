@@ -12,6 +12,7 @@ import { ProjectMembersScreen } from 'src/screens/project-members.screen';
 import { MemberScreen } from 'src/screens/member.screen';
 import { useSelector } from 'react-redux';
 import { tokenSelector } from 'src/redux/login/auth.selectors';
+import { AddMemberScreen } from 'src/screens/add-member.screen';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 
@@ -28,7 +29,6 @@ export const RootNavigator = () => {
             name={screenNames.client}
             component={ClientNavigator}
           />
-
           <RootStack.Screen
             name={screenNames.project}
             component={ProjectScreen}
@@ -41,6 +41,10 @@ export const RootNavigator = () => {
           <RootStack.Screen
             name={screenNames.projectMember}
             component={MemberScreen}
+          />
+          <RootStack.Screen
+            name={screenNames.addMember}
+            component={AddMemberScreen}
           />
         </RootStack.Group>
       ) : (

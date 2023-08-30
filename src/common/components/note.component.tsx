@@ -1,57 +1,67 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { CircledLayout } from 'src/common/components/circled-layout.component';
 import { Text12, Text16 } from 'src/common/components/text.component';
 import { COLORS } from 'src/common/constants/colors.consts';
 
 export interface IncomingNoteProps {
   text: string;
-  initials: string;
+  initials?: string;
+  style?: StyleProp<ViewStyle>;
 }
 
 export interface OutgoingNoteProps {
   text: string;
+  style?: StyleProp<ViewStyle>;
 }
 
 export interface NoteProps {
-  incoming: boolean;
+  style?: StyleProp<ViewStyle>;
+  incoming?: boolean;
   text: string;
-  initials: string;
+  initials?: string;
 }
 
-export const Note: React.FC<NoteProps> = ({ incoming, ...rest }) => {
+export const Note: React.FC<NoteProps> = ({ incoming = false, ...rest }) => {
   return incoming ? <IncomingNote {...rest} /> : <OutgoingNote {...rest} />;
 };
 
 export const IncomingNote: React.FC<IncomingNoteProps> = ({
   initials,
   text,
+  style,
 }) => {
   return (
-    <CircledLayout
-      position="left"
-      style={styles.incomingWrapper}
-      maxRadius={34}>
-      <View style={styles.avatar}>
-        <Text12 color="white">{initials}</Text12>
-      </View>
-      <Text16 color="title" style={styles.text}>
-        {text}
-      </Text16>
-    </CircledLayout>
+    <View style={styles.noteWrapper}>
+      <CircledLayout
+        position="left"
+        style={[styles.incomingWrapper, style]}
+        maxRadius={34}>
+        <View style={styles.avatar}>
+          <Text12 color="white">{initials}</Text12>
+        </View>
+        <Text16 color="title" style={styles.text}>
+          {text}
+        </Text16>
+      </CircledLayout>
+      <View style={styles.noteCompensator} />
+    </View>
   );
 };
 
-export const OutgoingNote: React.FC<OutgoingNoteProps> = ({ text }) => {
+export const OutgoingNote: React.FC<OutgoingNoteProps> = ({ text, style }) => {
   return (
-    <CircledLayout
-      position="right"
-      style={styles.outgoingWrapper}
-      maxRadius={34}>
-      <Text16 color="title" style={styles.text}>
-        {text}
-      </Text16>
-    </CircledLayout>
+    <View style={styles.noteWrapper}>
+      <View style={styles.noteCompensator} />
+      <CircledLayout
+        position="right"
+        style={[styles.outgoingWrapper, style]}
+        maxRadius={34}>
+        <Text16 color="title" style={styles.text}>
+          {text}
+        </Text16>
+      </CircledLayout>
+    </View>
   );
 };
 
@@ -60,15 +70,15 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    alignItems: 'flex-start',
+    alignItems: 'center',
     backgroundColor: COLORS.backgroundSecondary,
     marginRight: 32,
   },
   outgoingWrapper: {
-    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    alignItems: 'flex-start',
     backgroundColor: COLORS.mobile,
     marginLeft: 32,
   },
@@ -81,7 +91,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  text: {
+  text: {},
+  noteWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  noteCompensator: {
     flex: 1,
   },
 });

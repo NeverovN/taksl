@@ -12,6 +12,8 @@ export const getStyleByTaskType = (type: TaskType) => {
       return inReviewStyles;
     case TaskType.done:
       return doneStyles;
+    default:
+      return archivedStyles;
   }
 };
 

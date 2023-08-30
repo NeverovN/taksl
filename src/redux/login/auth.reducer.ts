@@ -32,10 +32,9 @@ export const authReducer = createReducer(initialState, builder =>
       state.data.token = null;
       state.error = null;
     })
-    .addCase(REGISTER.COMPLETE, (state, { payload }) => {
+    .addCase(REGISTER.COMPLETE, state => {
       state.loading = false;
       state.error = null;
-      state.data = { ...payload };
     })
     .addCase(REGISTER.FAIL, (state, { payload }) => {
       state.loading = false;

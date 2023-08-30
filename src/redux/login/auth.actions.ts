@@ -11,7 +11,7 @@ export const LOGIN = {
 export const REGISTER = {
   TRIGGER: createAction<RegisterRequestBody>('[Register] Triggered'),
   START: createAction('[Register] Started'),
-  COMPLETE: createAction<AuthData>('[Register] Complete'),
+  COMPLETE: createAction('[Register] Complete'),
   FAIL: createAction<{ error: Error }>('[Register] Failed'),
 };
 

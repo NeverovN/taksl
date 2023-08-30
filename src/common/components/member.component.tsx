@@ -12,18 +12,18 @@ export type AssigneeProps = {
 } & ProjectMember;
 
 export type ProjectMember = {
-  name: string;
+  username: string;
   initials: string;
   id: string;
-  role: string;
-  capacity: number;
+  role?: string;
+  storyPointsPerWeek?: string;
 };
 
 export const Member: React.FC<AssigneeProps> = ({
   initials,
-  name,
+  username,
   role,
-  capacity,
+  storyPointsPerWeek,
   onPress,
   style,
 }) => {
@@ -36,16 +36,18 @@ export const Member: React.FC<AssigneeProps> = ({
           </View>
           <View>
             <Text18 style={styles.nameSpace} color="title">
-              {name}
+              {username}
             </Text18>
-            <Text12 color="title">{role}</Text12>
+            {role && <Text12 color="title">{role}</Text12>}
           </View>
         </View>
-        <View style={styles.capacity}>
-          <Text16>
-            {capacity}/{STRINGS.h}
-          </Text16>
-        </View>
+        {!!storyPointsPerWeek && (
+          <View style={styles.capacity}>
+            <Text16>
+              {storyPointsPerWeek}/{STRINGS.h}
+            </Text16>
+          </View>
+        )}
       </CircledLayout>
       <View style={styles.membersBalancer} />
     </PressableOpacity>

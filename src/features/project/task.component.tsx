@@ -4,9 +4,9 @@ import { CircledLayout } from 'src/common/components/circled-layout.component';
 import { getStyleByTaskType } from '../../common/utils/get-style-by-task-type.utils';
 import { Text12, Text14, Text20 } from 'src/common/components/text.component';
 import { COLORS } from 'src/common/constants/colors.consts';
-import { STRINGS } from 'src/common/constants/strings.consts';
 import { TaskType } from 'src/common/types/task.types';
-import { UserShortened } from 'src/api/projects/projects.types';
+import { STRINGS } from 'src/common/constants/strings.consts';
+import { UserShort } from 'src/api/projects/projects.types';
 
 export interface TaskProps {
   style?: StyleProp<ViewStyle>;
@@ -15,7 +15,7 @@ export interface TaskProps {
   description?: string;
   storyPoints: number;
   daysLeft: number;
-  assigneeUser: UserShortened;
+  assigneeUser: UserShort;
 }
 
 export const Task: React.FC<TaskProps> = ({

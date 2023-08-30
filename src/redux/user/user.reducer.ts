@@ -1,6 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
   FETCH_USER,
+  FETCH_USER_NOTES,
   FETCH_USER_PROJECTS,
   LOGOUT_USER,
   UPDATE_USER,
@@ -13,6 +14,7 @@ const initialState: UserState = {
   // @ts-ignore
   data: {
     projects: [],
+    notes: [],
   },
 };
 
@@ -29,6 +31,9 @@ export const userReducer = createReducer(initialState, builder =>
     .addCase(FETCH_USER.FAIL, (state, { payload }) => {
       state.loading = false;
       state.error = payload.error;
+    })
+    .addCase(FETCH_USER_NOTES.COMPLETE, (state, { payload }) => {
+      state.data.notes = [...payload];
     })
     .addCase(FETCH_USER_PROJECTS.START, state => {
       state.loading = true;

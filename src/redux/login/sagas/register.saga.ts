@@ -1,15 +1,13 @@
 import { call, put, takeLatest } from '@redux-saga/core/effects';
-import { REGISTER } from '../auth.actions';
+import { LOGIN, REGISTER } from '../auth.actions';
 import { authApi } from 'src/api/auth.api';
 import { Response } from 'src/common/types/api.types';
-import { AuthResponse } from '../auth.types';
-import { FETCH_USER } from 'src/redux/user/user.actions';
 
 export function* registerSaga({
   payload,
 }: ReturnType<typeof REGISTER.TRIGGER>) {
   const response = (yield call(authApi.register, payload)) as Response<
-    AuthResponse,
+    void,
     Error
   >;
 
@@ -18,9 +16,9 @@ export function* registerSaga({
     return;
   }
 
-  yield put(REGISTER.COMPLETE(response.data));
+  yield put(REGISTER.COMPLETE());
 
-  yield put(FETCH_USER.TRIGGER({ id: response.data.userId }));
+  yield put(LOGIN.TRIGGER({ ...payload }));
 }
 
 export function* listenRegister() {

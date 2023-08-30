@@ -12,40 +12,13 @@ import {
 export class AuthAPI {
   login = async (
     body: LoginRequestBody,
-  ): PromiseResponse<AuthResponse, Error> => {
-    console.log(body);
-
-    const resp = await baseApi.post('auth/sign-in', body);
-    console.log(resp);
-
-    return resp;
-
-    // await delay(500);
-    // return {
-    //   status: 200,
-    //   ok: true,
-    //   data: {
-    //     userId: '0',
-    //     token: 'Some-Token',
-    //   },
-    // };
-  };
+  ): PromiseResponse<AuthResponse, Error> =>
+    await baseApi.post('/auth/sign-in', body);
 
   register = async (
     body: RegisterRequestBody,
-  ): PromiseResponse<AuthResponse, Error> => {
-    // baseApi.post('/register', body);
-    await delay(500);
-
-    return {
-      status: 200,
-      ok: true,
-      data: {
-        userId: '0',
-        token: 'Some-Token',
-      },
-    };
-  };
+  ): PromiseResponse<AuthResponse, Error> =>
+    baseApi.post('/auth/sign-up', body);
 }
 
 export const authApi = new AuthAPI();

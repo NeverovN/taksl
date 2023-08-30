@@ -10,6 +10,7 @@ export const screenNames = {
   projectMembers: 'ProjectMembersScreen',
   projectMember: 'ProjectMemberScreen',
   notes: 'NotesScreen',
+  addMember: 'AddMemberScreen',
 } as const;
 
 export const structuredScreens = {
@@ -19,6 +20,7 @@ export const structuredScreens = {
   projectMembers: screenNames.projectMembers,
   projectMember: screenNames.projectMember,
   task: screenNames.task,
+  addMember: screenNames.addMember,
   client: {
     root: screenNames.client,
     tabs: {

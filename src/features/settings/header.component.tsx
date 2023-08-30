@@ -5,18 +5,18 @@ import { UserInfo } from 'src/common/components/user-info.component';
 
 export interface HeaderProps {
   style?: StyleProp<ViewStyle>;
-  name: string;
-  role: string;
-  setName: (newName: string) => void;
-  setRole: (newRole: string) => void;
+  username?: string;
+  role?: string;
+  setUsername?: (newName: string) => void;
+  setRole?: (newRole: string) => void;
   editable?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   style,
-  name,
+  username,
   role,
-  setName,
+  setUsername,
   setRole,
   editable = true,
 }) => {
@@ -25,10 +25,10 @@ export const Header: React.FC<HeaderProps> = ({
       <Avatar style={styles.avatar} />
       <UserInfo
         editable={editable}
-        name={name}
+        username={username}
         role={role}
         style={styles.userInfo}
-        setName={setName}
+        setUsername={setUsername}
         setRole={setRole}
       />
     </View>
